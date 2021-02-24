@@ -1,0 +1,10 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/d84dd319-6d2e-425a-8874-4ba1e7f569a1/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/ema-jhon-shop",
+    "appService.deploySubpath": "build",
+    "editor.defaultFormatter": "vscode.emmet",
+    "editor.formatOnPaste": true
+}

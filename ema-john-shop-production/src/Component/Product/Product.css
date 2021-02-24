@@ -1,0 +1,29 @@
+.singleProduct{
+    display: flex;
+    border-bottom: 1px solid black;
+    border-right: 1px dotted black;
+    padding-top: 5%;
+    padding: 2% 0%;
+}
+
+.imagePart img{
+    width: 200px;
+}
+
+.descriptionPart{
+    padding-left: 1%;
+    padding-right: 3%;
+}
+
+.addToCartButton{
+    width: 150px;
+    height: 30px;
+    background-color: goldenrod;
+    border: 1px solid darkgray;
+    border-radius: 5px;
+}
+
+.productName{
+    color: navy;
+    font-weight: 400;
+}

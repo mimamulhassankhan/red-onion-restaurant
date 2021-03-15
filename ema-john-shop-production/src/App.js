@@ -17,6 +17,9 @@ import ConsumerPortalIndex from './Component/ConsumerPortal/ConsumerPortalIndex/
 import HomePageIndex from './Component/HomePage/HomePageIndex/HomePageIndex';
 import { addAllProduct, addCategory, fetchAllOrders, fetchSellerInfo, setAllSupplier, setAllUser } from './Redux/Actions/StoreActions';
 import { connect } from 'react-redux';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route {...rest} render={props => (

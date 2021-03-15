@@ -65,14 +65,24 @@ client.connect(err => {
       }
   })
 
-  app.post('/addCategory', (req, res) => {
-    const category = req.body;
-    categoryCollection.insertOne(category)
-    .then((result) => {
-      if(result.insertedCount > 0){
-        res.send(result.ops[0]);
-      }
-    })
+  app.post('/addCategory', upload.single('categoryImage'), async (req, res) => {
+    const result = await cloudinary.uploader.upload(req.file.path).catch(cloudError => console.log(cloudError));
+    if(result){
+      const categoryData = {...req.body, categorytImage: result.secure_url};  
+      categoryCollection.insertOne(categoryData)
+      .then(insertResult => {
+          if(insertResult.insertedCount < 0){
+              res.send({"status": "error","message": `<p className="text-danger">Data corrupted</p>`})
+          }
+          else{
+              res.send(insertResult.ops[0]);
+          }
+      })
+      .catch(dbError => console.log(dbError));
+    }
+    else{
+        res.status(404).send('Upload Failed');
+    }
   })
 
   app.get('/getAllSuppliers', (req, res) => {
@@ -185,6 +195,48 @@ client.connect(err => {
     .toArray((err, documents) =>{
       res.send(documents);
     })
+  });
+
+  app.patch('/updateSellerInfo/:s_Id', (req, res) => {
+    userCollection.updateOne({_id : ObjectId(req.params.s_Id)},
+    {
+        $set:{ sellerName: req.body.sellerName, sellerAddress: req.body.sellerAddress}
+    })
+    .then(result => {
+      res.send(result.modifiedCount > 0);
+    });
+  });
+
+  app.delete('/deleteSeller/:s_Id', (req, res) => {
+    userCollection.deleteOne({_id : ObjectId(req.params.s_Id)})
+    .then(result =>{
+      res.send(result.deletedCount > 0);
+    })
+  });
+
+  app.delete('/deleteProduct/:p_Id', (req, res) => {
+    productCollection.deleteOne({_id : ObjectId(req.params.p_Id)})
+    .then(result =>{
+      res.send(result.deletedCount > 0);
+    })
+  });
+
+  app.delete('/deleteCat/:c_Id', (req, res) => {
+    categoryCollection.deleteOne({_id : ObjectId(req.params.c_Id)})
+    .then(result =>{
+      res.send(result.deletedCount > 0);
+    })
+  });
+
+  app.patch('/updateOrderInfo/:o_Id', (req, res) => {
+    console.log(req.body);
+    orderCollection.updateOne({_id : ObjectId(req.params.o_Id)},
+    {
+        $set:{ status: req.body.status}
+    })
+    .then(result => {
+      res.send(result.modifiedCount > 0);
+    });
   });
   
   app.get('/', (req, res) => {

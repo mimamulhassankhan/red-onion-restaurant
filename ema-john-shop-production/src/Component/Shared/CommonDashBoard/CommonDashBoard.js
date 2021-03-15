@@ -22,6 +22,7 @@ import ViewConsumerOrder from '../../ConsumerPortal/ViewConsumerOrder/ViewConsum
 import AddAdmin from '../../SuperAdminPage/AddAdmin/AddAdmin';
 import { connect } from 'react-redux';
 import AddViewSupplier from '../../SuperAdminPage/AddViewSupplier/AddViewSupplier';
+import UpdateUserInfo from '../../ConsumerPortal/UpdateUserInfo/UpdateUserInfo';
 
 const drawerWidth = 300;
 
@@ -174,6 +175,9 @@ const CommonDashBoard = ({ user, addLoggedinUser}) => {
             }
             {
                 selectedOption === 'addSupplier'&& <AddViewSupplier></AddViewSupplier>
+            }
+            {
+                selectedOption === 'updateInfo'&& <UpdateUserInfo></UpdateUserInfo>
             }
         </main>
         </div>

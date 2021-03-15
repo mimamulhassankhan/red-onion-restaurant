@@ -70,7 +70,7 @@ const Footer = () => {
                                 <Link to={`/#`}>About us</Link>
                             </li>
                             <li>
-                                <Link to={`/#`}>Store location</Link>
+                                <Link to={`/sellerPortal`}>Seller Portal</Link>
                             </li>
                             <li>
                                 <Link to={`/#`}>Register as Seller</Link>

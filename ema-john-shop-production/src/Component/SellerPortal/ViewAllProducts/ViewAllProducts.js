@@ -1,16 +1,30 @@
-import { faEye, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { addAllProduct } from '../../../Redux/Actions/StoreActions';
+import { deleteSelectedData } from '../../../utils/dataControllers';
 import DashboardNav from '../../Shared/DashboardNav/DashboardNav';
 
-const ViewAllProducts = ({user, products}) => {
+const ViewAllProducts = ({user, products, addAllProduct}) => {
     const [sellerProducts, setSellerProducts] = useState([]);
     useEffect(() =>{
-        const sellerProd = products.filter(prod => (prod.seller || prod.productSellerName) === user.displayName);
+        const sellerProd = products.filter(prod => (prod.seller || prod.productSellerName) === user?.sellerName);
         setSellerProducts(sellerProd);
-    }, [user, products])
+    }, [user, products]);
+
+    const handleDeleteButtonClick = (productId) => {
+        deleteSelectedData(`http://localhost:5000/deleteProduct/${productId}`)
+        .then(data => {
+            if(data){
+                const filteredData = products.filter(pd => pd._id !== productId);
+                addAllProduct(filteredData);
+            }
+        })
+        .catch(err => console.log(err));
+        
+    }
     return (
         <>
         <DashboardNav displayOption="View All Product"></DashboardNav>
@@ -35,8 +49,7 @@ const ViewAllProducts = ({user, products}) => {
                         <td>{prod.price || prod.productPrice}</td>
                         <td>{prod.stock || prod.productStock}</td>
                         <td className="d-flex justify-content-around" >
-                            <Button variant="success"><FontAwesomeIcon icon={faEye} /></Button>
-                            <Button variant="info"><FontAwesomeIcon icon={faTrashAlt} /></Button>
+                            <Button variant="danger" onClick={() => handleDeleteButtonClick(prod._id || prod.key)}><FontAwesomeIcon icon={faTrashAlt} /></Button>
                             <Button variant="warning"><FontAwesomeIcon icon={faPen} /></Button>
                         </td>
                     </tr>)
@@ -54,4 +67,8 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps)(ViewAllProducts);
+const mapDispatchToProps = {
+    addAllProduct : addAllProduct
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewAllProducts);

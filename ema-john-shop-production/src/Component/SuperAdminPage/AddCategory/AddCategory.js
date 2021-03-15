@@ -6,17 +6,18 @@ import { addCategory } from '../../../Redux/Actions/StoreActions';
 const AddCategory = ({categories, addCategory}) => {
     const { register, handleSubmit, errors, reset } = useForm();
     const onSubmit = data => {
-        fetch('https://fathomless-basin-42766.herokuapp.com/addCategory', {
+        const categoryData = new FormData();
+        categoryData.append('categoryName', data.categoryName);
+        categoryData.append('categoryDetails', data.categoryDetails);
+        categoryData.append('categoryImage', data.categoryImage[0]);
+        fetch('http://localhost:5000/addCategory', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            body: categoryData
         })
         .then(res => res.json())
         .then(data => {
             addCategory([data, ...categories]);
-            reset();
+            reset({});
         }); 
     }
 
@@ -36,7 +37,7 @@ const AddCategory = ({categories, addCategory}) => {
                 </div>
                 <div className="col-6">
                     <label htmlFor="categoryImage">Category Image</label>
-                    <input name="categoryImage" className="form-control bg-transparent" placeholder="Upload Image" type="file" />
+                    <input name="categoryImage" ref={register({ required: true })} className="form-control bg-transparent" placeholder="Upload Image" type="file" />
                     {errors.categoryImage && <span className="text-danger">This field is required</span>}
                 </div>
             </div>

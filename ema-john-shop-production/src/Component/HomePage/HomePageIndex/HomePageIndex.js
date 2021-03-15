@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { addCategory } from '../../../Redux/Actions/StoreActions';
 import CategorySection from '../CategorySection/CategorySection';
 import ProductContainer from '../ProductContainer/ProductContainer';
 import SelectionTab from '../SelectionTab/SelectionTab';
@@ -10,10 +9,11 @@ const HomePageIndex = ({categories}) => {
 
     return (
         <>
+        <div className="my-5">
             <CategorySection categories={categories} setSelectedCategory={setSelectedCategory}></CategorySection>
-            <SelectionTab selectedCategory={selectedCategory}></SelectionTab>
-            <ProductContainer selectedCategory={selectedCategory}></ProductContainer>
-            
+        </div>
+        <SelectionTab selectedCategory={selectedCategory}></SelectionTab>
+        <ProductContainer selectedCategory={selectedCategory}></ProductContainer>
         </>
     );
 };

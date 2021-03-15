@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { connect } from 'react-redux';
 import { addAllProduct } from '../../../Redux/Actions/StoreActions';
@@ -7,17 +7,11 @@ import ViewAllProducts from '../ViewAllProducts/ViewAllProducts';
 
 const AddProduct = ({sellers, user, categories, products, addAllProduct}) => {
     const { register, handleSubmit, errors, reset } = useForm();
-    const [sellerInfo, setSellerInfo] = useState({});
-
-    useEffect( () => {
-        const [selectedSeller] = sellers.filter(seller => seller.sellerUserName === user.email)
-        setSellerInfo(selectedSeller);
-    }, [sellers, user]);
 
     const onSubmit = data => {
         const productData = new FormData();
-        productData.append('productSellerId', sellerInfo._id);
-        productData.append('productSellerName', sellerInfo.sellerName);
+        productData.append('productSellerId', user._id);
+        productData.append('productSellerName', user.sellerName);
         productData.append('productName', data.productName);
         productData.append('productDescription', data.productDescription);
         productData.append('productCategory', data.productCategory);
@@ -92,7 +86,6 @@ const mapStateToProps = state => {
         categories: state.categories,
         products: state.products,
         user: state.user,
-        sellers: state.sellers
     }
 }
 

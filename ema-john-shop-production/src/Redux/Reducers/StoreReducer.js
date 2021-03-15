@@ -24,7 +24,7 @@ export const storeReducer = (state = initialState, action) => {
                 cart: funcToAddCart(state.cart, action.product)
             }
         case REMOVE_FROM_CART:
-            const remaingFoods = state.cart.filter(food => food.id !== action.id);
+            const remaingFoods = state.cart.filter(food => food._id !== action.id);
             return {
                 ...state,
                 cart : remaingFoods

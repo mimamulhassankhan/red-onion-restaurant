@@ -1,11 +1,50 @@
 import { faEye, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { setAllUser } from '../../../Redux/Actions/StoreActions';
+import { deleteSelectedData } from '../../../utils/dataControllers';
 import DashboardNav from '../../Shared/DashboardNav/DashboardNav';
+import DeleteConfirmation from '../../Shared/DeleteConfirmation/DeleteConfirmation';
+import UpdateSellerInfo from '../UpdateSellerInfo/UpdateSellerInfo';
 
-const ViewAllSeller = ({sellers}) => {
+const ViewAllSeller = ({allUsers, setAllUser}) => {
+    const [allSellers, setAllSellers] = useState([]);
+    const [modalShow, setModalShow] = useState(false);
+    const [deleteModalShow, setDeleteModalShow] = useState(false);
+    const [selectedSeller, setSelectedSeller] = useState({});
+    const [deleteURL, setDeleteURL] = useState('');
+    const [deleteState, setDeleteState] = useState(false);
+
+    const handleUpdateClose = () => setModalShow(false);
+    const handleUpdateShow = () => setModalShow(true);
+
+    const handleDeleteClose = () => setDeleteModalShow(false);
+    const handleDeleteShow = () => setDeleteModalShow(true);
+
+    useEffect(() => {
+        const filteredSellers = allUsers.filter(user => user.role === 'seller');
+        setAllSellers(filteredSellers);
+    }, [allUsers]);
+
+    const handleSellerInfoClick = sellerId => {
+        const [filteredSeller] = allUsers.filter(user => user.role === 'seller' && user._id === sellerId);
+        setSelectedSeller(filteredSeller);
+        handleUpdateShow();
+    }
+
+    const handleDeleteButtonClick = (sellerId) => {
+        deleteSelectedData(`http://localhost:5000/deleteSeller/${sellerId}`)
+        .then(data => {
+            if(data){
+                const remainingUsers = allUsers.filter(user => user._id !== sellerId);
+                setAllUser(remainingUsers);
+            }
+        })
+        .catch(err => console.log(err));
+    }
+
     return (
         <>
         <DashboardNav displayOption="All Seller"></DashboardNav>
@@ -20,11 +59,11 @@ const ViewAllSeller = ({sellers}) => {
                 </tr>
             </thead>
             {
-                sellers.length > 0 ?
+                allSellers.length > 0 ?
                 <tbody>
                     {
-                        sellers.map((seller, idx) => 
-                        <tr className="align-center">
+                        allSellers.map((seller, idx) => 
+                        <tr key={idx} className="align-center">
                             <td>{idx+1}</td>
                             <td>{seller.sellerName}</td>
                             <td>{seller.sellerAddress}</td>
@@ -35,27 +74,37 @@ const ViewAllSeller = ({sellers}) => {
                                 </Form.Control>
                             </td>
                             <td className="d-flex justify-content-around" >
-                                <Button variant="success"><FontAwesomeIcon icon={faEye} /></Button>
-                                <Button variant="info"><FontAwesomeIcon icon={faTrashAlt} /></Button>
-                                <Button variant="warning"><FontAwesomeIcon icon={faPen} /></Button>
+                                <Button variant="danger" onClick={ () => handleDeleteButtonClick(seller._id)}><FontAwesomeIcon icon={faTrashAlt} /></Button>
+                                <Button variant="warning" onClick={() => handleSellerInfoClick(seller._id)}><FontAwesomeIcon icon={faPen} /></Button>
                             </td>
                         </tr>)
                     }
                     
                 </tbody>
                 :
-                <h1 className="text-center text-danger">Nothing to Show</h1>
+                <tbody>
+                    <tr>
+                        <td colSpan="5">
+                            <h1 className="text-center text-danger">Nothing to Show</h1>
+                        </td>
+                    </tr>
+                </tbody>
             }
-            
-        </Table>  
+        </Table>
+        <DeleteConfirmation setDeleteState={setDeleteState} url={deleteURL} show={deleteModalShow} handleClose={handleDeleteClose}></DeleteConfirmation>
+        <UpdateSellerInfo sellerDetails={selectedSeller} show={modalShow} handleClose={handleUpdateClose}></UpdateSellerInfo>
         </>
     );
 };
 
 const mapStateToProps = state => {
     return{
-        sellers: state.sellers
+        allUsers: state.allUsers
     }
 }
 
-export default connect(mapStateToProps)(ViewAllSeller);
+const mapDispatchToProps = {
+    setAllUser : setAllUser
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewAllSeller);

@@ -1,10 +1,28 @@
 import { faEye, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Table } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import DashboardNav from '../../Shared/DashboardNav/DashboardNav';
 
-const ViewSellerOrders = () => {
+const ViewSellerOrders = ({orders, user}) => {
+    const [myOrders, setMyOrders] = useState([]);
+    useEffect(() => {
+        // const myProducts = [];
+        // for(const obj in orders){
+        //     console.log(...obj);
+        //     myProducts.push(...obj?.orderedItems instanceof Array ?.filter(item => item.productSellerId === user._id));
+        // // }
+        // console.log(myProducts);
+        // const filteredItems = orders.map(order => {
+        //     let {orderedItems} = order;
+        //     if(Array.isArray(orderedItems)){
+        //         let myProducts = orderedItems.filter(item => item.productSellerId === user._id);
+        //         return {...order, orderedItems: myProducts};
+        //     }
+        // })
+        // console.log(filteredItems);
+    },[orders, user])
     return (
         <>
             <DashboardNav displayOption="View Orders"></DashboardNav>
@@ -13,10 +31,9 @@ const ViewSellerOrders = () => {
                 <tr>
                     <th>#</th>
                     <th>Order No</th>
-                    <th>now</th>
-                    <th>now 2</th>
-                    <th>Address</th>
-                    <th></th>
+                    <th>Products</th>
+                    <th>From</th>
+                    <th>Shipping Address</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -32,7 +49,7 @@ const ViewSellerOrders = () => {
                     <td>
                         <Form.Control as="select" defaultValue={0}>
                             <option value="Accept">Accept</option>
-                            <option value="Processing">Processing</option>
+                            <option value="pending">Pending</option>
                             <option value="Delivered">Delivered</option>
                             <option value="Rejected">Rejected</option>
                         </Form.Control>
@@ -50,4 +67,11 @@ const ViewSellerOrders = () => {
     );
 };
 
-export default ViewSellerOrders;
+const mapStateToProps = state => {
+    return{
+        orders: state.orders,
+        user: state.user
+    }
+}
+
+export default connect(mapStateToProps)(ViewSellerOrders);

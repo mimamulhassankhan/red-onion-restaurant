@@ -48,7 +48,7 @@ export const handleFbSignIn = () => {
     })
 }
 
-export const handleSignOut = () => {
+export const overAllSignOut = () => {
     return firebase.auth().signOut()
     .then(res => {
       const signedOutUser = {

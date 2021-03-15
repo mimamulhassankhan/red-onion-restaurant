@@ -4,9 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Badge, Button, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DashboardNav from '../../Shared/DashboardNav/DashboardNav';
+import UpdateOrder from '../UpdateOrder/UpdateOrder';
 
-const ViewConsumerOrder = ({orders, user}) => {
+const ViewConsumerOrder = ({orders, user, products}) => {
+    const [showUpdateOrderModal, setShowUpdateOrderModal] = useState(false);
+    const handleUpdateOrderModalClose = () => setShowUpdateOrderModal(false);
     const [myOrders, setMyOrders] = useState([]);
+    const [selectedOrder, setSelectedOrder] = useState([]);
 
     useEffect( () => {
         const myOrdersFromAllOrder = orders.filter(order => order.ordererEmail === user.email);
@@ -38,13 +42,14 @@ const ViewConsumerOrder = ({orders, user}) => {
                                 <td>
                                     <tr>
                                         {
-                                            orderedItems.map(item => (
-                                                <>
-                                                <td>{item?.productId}</td>
-                                                <td>{item?.quantity}</td>
-                                                <br/>
-                                                </>
-                                            ))
+                                            orderedItems && orderedItems.map(item => {
+                                                const [filteredProduct] = products.filter(pd => pd._id === item.productId);
+                                                return (
+                                                    <>
+                                                    <td className="d-block"><div>{filteredProduct?.name || filteredProduct?.productName} <br/>Quantity: {item?.quantity}</div></td>
+                                                    </>
+                                                )
+                                            })
                                         }
                                     </tr>
                                 </td>
@@ -53,12 +58,12 @@ const ViewConsumerOrder = ({orders, user}) => {
                                     <p>{supplierInfo?.supplierPhone}</p>
                                 </td>
                                 <td>
-                                    <Badge pill variant="primary">
-                                        {order.status || 'Pending'}
+                                    <Badge pill variant={order?.status === 'pending' ? 'primary': 'danger'}>
+                                        {(order && order?.status?.toUpperCase()) || 'Pending'}
                                     </Badge>
                                 </td>
                                 <td className="d-flex justify-content-around" >
-                                    <Button variant="success"><FontAwesomeIcon icon={faEye} /></Button>
+                                    <Button variant="success" onClick={ () => {setSelectedOrder(order); setShowUpdateOrderModal(true)}}><FontAwesomeIcon icon={faEye} /></Button>
                                 </td>
                             </tr>
                         )
@@ -70,13 +75,15 @@ const ViewConsumerOrder = ({orders, user}) => {
                 
             </tbody>
         </Table>
+        <UpdateOrder show={showUpdateOrderModal} orderDetails={selectedOrder} handleClose={handleUpdateOrderModalClose}></UpdateOrder>
         </>
     );
 };
 const mapStateToProps = state => {
     return{
         user: state.user,
-        orders: state.orders
+        orders: state.orders,
+        products: state.products,
     }
 }
 export default connect(mapStateToProps)(ViewConsumerOrder);

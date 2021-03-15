@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { addSignedUser, addToCart, fetchAllOrders } from '../../Redux/Actions/StoreActions';
 import { processOrder } from '../../utilities/databaseManager';
+import { updateJSONData } from '../../utils/dataControllers';
 import ProcessPayment from '../ProcessPayment/ProcessPayment';
 
 const Shipment = ({user,cart, addToCart, orders, fetchAllOrders, addSignedUser, allSuppliers}) => {
@@ -21,19 +22,14 @@ const Shipment = ({user,cart, addToCart, orders, fetchAllOrders, addSignedUser, 
             businessName: data.businessName,
             userPhone: data.userPhone
         }
-        fetch(`http://localhost:5000/updateUser/${user?._id}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(newUserInfo)
-        })
-        .then(res => res.json())
+        updateJSONData(`http://localhost:5000/updateUser/${user?._id}`, newUserInfo)
         .then(data => {
             if(data){
                 const updatedUser = {...user, userShippingAddress: newUserInfo};
-                console.log(updatedUser);
                 addSignedUser(updatedUser);
             }
-        });
+        })
+        .catch(err => console.log(err));
         setShippingData(newUserInfo);
     };
 
@@ -41,11 +37,12 @@ const Shipment = ({user,cart, addToCart, orders, fetchAllOrders, addSignedUser, 
         const cartProductIds = cart.map(item => {
             const productInfo = {
                 productId: item._id,
-                quantity: item.quantity
+                quantity: item.quantity,
+                productSellerId : item.productSellerId,
+                productSellerName: item.productSellerName || item.seller
             }
             return productInfo;
         });
-        console.log(cartProductIds);
         return cartProductIds;
     }
 

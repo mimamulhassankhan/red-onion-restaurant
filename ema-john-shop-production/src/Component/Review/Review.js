@@ -5,7 +5,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const Review = ({cartForReview}) => {
-
+    const total = cartForReview.reduce((st, pd) => st += ((pd.productPrice || pd.price ) * pd.quantity), 0);
     return (
         <div className="d-flex">
             {
@@ -26,11 +26,11 @@ const Review = ({cartForReview}) => {
                     </thead>
                     <tbody>
                         {
-                            cartForReview && cartForReview.map(pd => <ReviewItems clickHandler={() => console.log('Delete Clicked')} key={pd._id} product={pd}></ReviewItems>)
+                            cartForReview && cartForReview.map(pd => <ReviewItems key={pd._id} product={pd}></ReviewItems>)
                         }
                         <tr>
                             <td className="bg-danger text-right" colSpan="4"><strong>Total : </strong></td>
-                            <td className="bg-danger"></td>
+                            <td className="bg-danger">{+total.toFixed(2)}</td>
                         </tr>
                     </tbody>
                     </Table>
